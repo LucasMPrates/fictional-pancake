@@ -22,8 +22,9 @@ public class VendasApplication {
             repository.save(new Cliente("Lucas"));
             repository.save(new Cliente("Outro Cliente"));
 
-            boolean existe = repository.existsByNome("Lucas");
-            System.out.println("Existe? " + existe);
+            List<Cliente> result = repository.encontrarPorNome("Lucas");
+
+            result.forEach(cliente -> System.out.println(cliente.getNome()));
 
 //            System.out.println("Atualizando clientes");
 //            todosClientes.forEach(c -> {
