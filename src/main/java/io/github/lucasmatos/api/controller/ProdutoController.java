@@ -1,12 +1,17 @@
 package io.github.lucasmatos.api.controller;
 
 
+import io.github.lucasmatos.domain.entity.Cliente;
 import io.github.lucasmatos.domain.entity.Produto;
 import io.github.lucasmatos.domain.repository.ProdutosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/produtos")
@@ -29,8 +34,8 @@ public class ProdutoController {
 
     @PutMapping("/update/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody Produto produto) {
-        repository.findById(produto.getId()).map(produtExistente -> {
+    public void update(@RequestBody Produto produto, @PathVariable Integer id) {
+        repository.findById(id).map(produtExistente -> {
             produto.setId(produtExistente.getId());
             repository.save(produto);
             return produto;
@@ -44,5 +49,16 @@ public class ProdutoController {
             repository.delete(produto);
             return produto;
         }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
+    }
+
+    @GetMapping("/produto")
+    public List<Cliente> find(Produto produto) {
+        ExampleMatcher matcher = ExampleMatcher
+                .matching()
+                .withIgnoreCase()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+
+        Example example = Example.of(produto, matcher);
+        return repository.findAll(example);
     }
 }
