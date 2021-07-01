@@ -15,6 +15,17 @@ public class Cliente {
     private Integer id;
     private String nome;
 
+    @Column(name = "cpf", length = 11)
+    private String cpf;
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
     public Set<Pedido> getPedidos() {
         return pedidos;
     }

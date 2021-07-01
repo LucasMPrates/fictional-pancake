@@ -3,10 +3,13 @@ package io.github.lucasmatos.api.controller;
 import io.github.lucasmatos.domain.entity.Cliente;
 import io.github.lucasmatos.domain.repository.ClientesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -50,11 +53,23 @@ public class ClienteController {
     @ResponseBody
     public ResponseEntity update(@PathVariable Integer id, @RequestBody Cliente cliente) {
         Optional<Cliente> clienteOptional = repository.findById(id);
-        if(clienteOptional.isPresent()){
+        if (clienteOptional.isPresent()) {
             cliente.setId(clienteOptional.get().getId());
             repository.save(cliente);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/cliente")
+    public ResponseEntity find(Cliente cliente) {
+        ExampleMatcher matcher = ExampleMatcher
+                .matching()
+                .withIgnoreCase()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+
+        Example example = Example.of(cliente);
+        List<Cliente> lista = repository.findAll(example);
+        return ResponseEntity.ok(lista);
     }
 }
