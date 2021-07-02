@@ -23,5 +23,4 @@ public class PedidoController {
         Pedido pedidoSalvo = service.salvar(pedidoDTO);
         return pedidoSalvo.getId();
     }
-
 }
