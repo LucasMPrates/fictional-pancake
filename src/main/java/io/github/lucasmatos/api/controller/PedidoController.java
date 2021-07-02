@@ -17,7 +17,7 @@ public class PedidoController {
         this.service = service;
     }
 
-    @PostMapping
+    @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
     public Integer save(@RequestBody PedidoDTO pedidoDTO) {
         Pedido pedidoSalvo = service.salvar(pedidoDTO);
