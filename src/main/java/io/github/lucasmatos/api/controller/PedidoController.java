@@ -1,11 +1,13 @@
 package io.github.lucasmatos.api.controller;
 
 
+import io.github.lucasmatos.api.dto.AtualizacaoStatusPedidoDTO;
 import io.github.lucasmatos.api.dto.InformacaoItemPedidoDTO;
 import io.github.lucasmatos.api.dto.InformacoesPedidoDTO;
 import io.github.lucasmatos.api.dto.PedidoDTO;
 import io.github.lucasmatos.domain.entity.ItemPedido;
 import io.github.lucasmatos.domain.entity.Pedido;
+import io.github.lucasmatos.domain.enums.StatusPedido;
 import io.github.lucasmatos.service.PedidoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
@@ -41,6 +43,13 @@ public class PedidoController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
     }
 
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateStatus(@RequestBody AtualizacaoStatusPedidoDTO dto, @PathVariable Integer id) {
+        String novoStatus = dto.getNovoStatus();
+        service.atualizaStatus(id, StatusPedido.valueOf(novoStatus));
+    }
+
     private InformacoesPedidoDTO converter(Pedido pedido) {
         return InformacoesPedidoDTO.builder()
                 .codigo(pedido.getId())
@@ -49,6 +58,7 @@ public class PedidoController {
                 .nomeCliente(pedido.getCliente().getNome())
                 .dataPedido(pedido.getDataPedido().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                 .items(converter(pedido.getItens()))
+                .status(pedido.getStatus().name())
                 .build();
     }
 

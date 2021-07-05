@@ -6,10 +6,12 @@ import io.github.lucasmatos.domain.entity.Cliente;
 import io.github.lucasmatos.domain.entity.ItemPedido;
 import io.github.lucasmatos.domain.entity.Pedido;
 import io.github.lucasmatos.domain.entity.Produto;
+import io.github.lucasmatos.domain.enums.StatusPedido;
 import io.github.lucasmatos.domain.repository.ClientesRepository;
 import io.github.lucasmatos.domain.repository.ItemPedidoRepository;
 import io.github.lucasmatos.domain.repository.PedidoRepository;
 import io.github.lucasmatos.domain.repository.ProdutosRepository;
+import io.github.lucasmatos.exception.PedidoNaoEncontradoException;
 import io.github.lucasmatos.exception.RegraNegocioException;
 import io.github.lucasmatos.service.PedidoService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,7 @@ public class PedidoServiceImpl implements PedidoService {
         pedido.setTotal(dto.getTotal());
         pedido.setDataPedido(LocalDate.now());
         pedido.setCliente(cliente);
+        pedido.setStatus(StatusPedido.REALIZADO);
 
         List<ItemPedido> itemPedidos = converterItems(pedido, dto.getItems());
         pedidoRepository.save(pedido);
@@ -53,6 +56,16 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     public Optional<Pedido> obterPedidoCompleto(Integer id) {
         return pedidoRepository.findByIdFetchItens(id);
+    }
+
+    @Override
+    @Transactional
+    public void atualizaStatus(Integer id, StatusPedido statusPedido) {
+        pedidoRepository.findById(id)
+                .map(pedido -> {
+                    pedido.setStatus(statusPedido);
+                    return pedidoRepository.save(pedido);
+                }).orElseThrow(() -> new PedidoNaoEncontradoException());
     }
 
     private List<ItemPedido> converterItems(Pedido pedido, List<ItemPedidoDTO> items) {
