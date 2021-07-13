@@ -18,7 +18,7 @@ import java.util.Set;
 public class Cliente {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     //@column como esta com @entity o jpa ja entende que os nomes sao iguais tabela/propriedades
     private Integer id;
 
