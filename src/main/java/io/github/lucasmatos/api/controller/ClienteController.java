@@ -2,6 +2,7 @@ package io.github.lucasmatos.api.controller;
 
 import io.github.lucasmatos.domain.entity.Cliente;
 import io.github.lucasmatos.domain.repository.ClientesRepository;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -14,19 +15,30 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/clientes")
+@Api("Api Clientes")
 public class ClienteController {
 
     @Autowired
     private ClientesRepository repository;
 
     @GetMapping("/{id}")
-    public Cliente getClienteById(@PathVariable Integer id) {
+    @ApiOperation("Busca um cliente")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Cliente encontrado"),
+            @ApiResponse(code = 404, message = "Cliente não encontrado para o id informado")
+    })
+    public Cliente getClienteById(@PathVariable @ApiParam("Id do cliente") Integer id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
     }
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Salva um cliente")
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Cliente salvo com sucesso"),
+            @ApiResponse(code = 400, message = "Erro de validação")
+    })
     public Cliente save(@RequestBody @Valid Cliente cliente) {
         return repository.save(cliente);
     }
